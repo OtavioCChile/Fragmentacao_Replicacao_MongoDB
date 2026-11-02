@@ -1,0 +1,215 @@
+networks:
+
+  mongo-cluster:
+    driver: bridge
+
+
+services:
+
+  shard1a:
+    image: mongo:8
+    container_name: shard1a
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard1
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27018:27017"
+
+    volumes:
+      - ./data/shard1a:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  shard1b:
+    image: mongo:8
+    container_name: shard1b
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard1
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27019:27017"
+
+    volumes:
+      - ./data/shard1b:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  shard1c:
+    image: mongo:8
+    container_name: shard1c
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard1
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27020:27017"
+
+    volumes:
+      - ./data/shard1c:/data/db
+
+    networks:
+      - mongo-cluster
+
+  shard2a:
+    image: mongo:8
+    container_name: shard2a
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard2
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27021:27017"
+
+    volumes:
+      - ./data/shard2a:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  shard2b:
+    image: mongo:8
+    container_name: shard2b
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard2
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27022:27017"
+
+    volumes:
+      - ./data/shard2b:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  shard2c:
+    image: mongo:8
+    container_name: shard2c
+
+    command: >
+      mongod
+      --shardsvr
+      --replSet rsShard2
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27023:27017"
+
+    volumes:
+      - ./data/shard2c:/data/db
+
+    networks:
+      - mongo-cluster
+
+  cfg1:
+    image: mongo:8
+    container_name: cfg1
+
+    command: >
+      mongod
+      --configsvr
+      --replSet cfgRS
+      --port 27019
+      --bind_ip_all
+
+    ports:
+      - "27024:27019"
+
+    volumes:
+      - ./data/cfg1:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  cfg2:
+    image: mongo:8
+    container_name: cfg2
+
+    command: >
+      mongod
+      --configsvr
+      --replSet cfgRS
+      --port 27019
+      --bind_ip_all
+
+    ports:
+      - "27025:27019"
+
+    volumes:
+      - ./data/cfg2:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  cfg3:
+    image: mongo:8
+    container_name: cfg3
+
+    command: >
+      mongod
+      --configsvr
+      --replSet cfgRS
+      --port 27019
+      --bind_ip_all
+
+    ports:
+      - "27026:27019"
+
+    volumes:
+      - ./data/cfg3:/data/db
+
+    networks:
+      - mongo-cluster
+
+
+  mongos:
+    image: mongo:8
+    container_name: mongos
+
+    command: >
+      mongos
+      --configdb cfgRS/cfg1:27019,cfg2:27019,cfg3:27019
+      --port 27017
+      --bind_ip_all
+
+    ports:
+      - "27017:27017"
+
+    depends_on:
+      - cfg1
+      - cfg2
+      - cfg3
+
+    networks:
+      - mongo-cluster
